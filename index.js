@@ -46,7 +46,7 @@ function generateEquation(){
   	do{
   		equation = (10+getRandomInt(89)) + "+" + (1+getRandomInt(8)) + "-" + (1+getRandomInt(8));
       answer = evaluate(equation);
-    } while (answer < 10 || answer >= 100);
+    } while (answer < 0 || answer >= 10);
   }
   else if (choice == 4) {
   	do{
