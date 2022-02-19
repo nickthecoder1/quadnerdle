@@ -312,7 +312,7 @@ function keyDownHandler(e) {
 function  mouseMoveHandler(e){
   mouseX = e.clientX - canvas.offsetLeft;
   mouseY = e.clientY - canvas.offsetTop;
-  for (var n = 0; n<9; n++){
+  for (var n = 0; n<=9; n++){
   	var xy = getNumberXY(n);
     var x = xy[0];
     var y = xy[1];
@@ -366,7 +366,7 @@ function resultsToString(){
 function mouseClickHandler(e) {
   mouseX = e.clientX - canvas.offsetLeft;
   mouseY = e.clientY - canvas.offsetTop;
-  for (var n = 0; n<9; n++){
+  for (var n = 0; n<=9; n++){
   	var xy = getNumberXY(n);
     var x = xy[0];
     var y = xy[1];
