@@ -489,5 +489,6 @@ splitUrl = window.location.href.split("?seed=");
 if (splitUrl.length > 1){
   seed = splitUrl[1];
   randGen = randomRealGen("1"+seed);
+  eq = [generateEquation(),generateEquation(),generateEquation(),generateEquation()];
 }
 draw();
