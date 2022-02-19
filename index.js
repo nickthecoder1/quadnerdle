@@ -129,9 +129,8 @@ function generateEquation(){
   return equation;
 }
 function setDefaults(){
-	console.log(window. location. href)
 	seed = Date.now().toString();
-	randGen = randomRealGen(seed);
+	randGen = randomRealGen("1"+seed);
   mouseX = 0;
   mouseY = 0;
   kboxWidth = 30;
@@ -485,4 +484,9 @@ function draw() {
   requestAnimationFrame(draw);
 }
 setDefaults();
+splitUrl = window.location.href.split("?seed=");
+if (splitUrl.length > 1){
+  seed = splitUrl[1];
+  randGen = randomRealGen("1"+seed);
+}
 draw();
