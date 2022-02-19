@@ -17,6 +17,7 @@ var blacks = ["","","",""]
 var gameState = 0; // 0 for playing, 1 for win, 2 for lose
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("click", mouseClickHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
 function getRandomInt(max) { //between 0 and max inclusive
   return Math.floor(Math.random() * max);
 }
@@ -281,7 +282,30 @@ function keyDownHandler(e) {
     
 }
 
-
+function  mouseMoveHandler(e){
+  mouseX = e.clientX - canvas.offsetLeft;
+  mouseY = e.clientY - canvas.offsetTop;
+  for (var n = 0; n<9; n++){
+  	var xy = getNumberXY(n);
+    var x = xy[0];
+    var y = xy[1];
+  	if (mouseX > x && mouseY > y && mouseX < x+kboxWidth && mouseY < y+kboxWidth){
+  		canvas.style.cursor = "pointer";
+      return;
+    }
+  }
+  for (var n = 0; n<7; n++){
+  	var sxy = getSymbolInfo(n);
+    var s = sxy[0];
+    var x = sxy[1];
+    var y = sxy[2];
+  	if (mouseX > x && mouseY > y && mouseX < x+kboxWidth && mouseY < y+kboxWidth){
+  		canvas.style.cursor = "pointer";
+      return;
+    }
+  }
+  canvas.style.cursor = "default";
+}
 function mouseClickHandler(e) {
   mouseX = e.clientX - canvas.offsetLeft;
   mouseY = e.clientY - canvas.offsetTop;
@@ -291,6 +315,7 @@ function mouseClickHandler(e) {
     var y = xy[1];
   	if (mouseX > x && mouseY > y && mouseX < x+kboxWidth && mouseY < y+kboxWidth){
     	addSymbol(n.toString());
+      return
     }
   }
   for (var n = 0; n<7; n++){
@@ -302,6 +327,7 @@ function mouseClickHandler(e) {
   		if (n <= 4) addSymbol(s);
       if (n == 5) enterBtn();
       if (n == 6) backspaceBtn();
+      return;
     }
   }
 }
