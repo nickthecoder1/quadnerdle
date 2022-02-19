@@ -139,7 +139,7 @@ function setDefaults(){
   boxGap = 3;
   eq = [generateEquation(),generateEquation(),generateEquation(),generateEquation()];
   pastGuesses = [""];
-  message = "test"
+  message = ""
   analyses = [[],[],[],[]]
   for (var q=0; q<4; q++){
   	for (var e=0; e<numGuesses; e++){
