@@ -130,7 +130,6 @@ const converter = (arr,operators)=>{
   let operators2 = [...operators];
   let skips = 0;
   for(let i=0;i<arr.length-1;i++){
-    if(arr2.length<2){return arr2[0]}
     if(operators[i]=="*"){
       o=arr2[i-skips]*arr2[i+1-skips]
       arr2.splice(i-skips,i+2-skips,o)
@@ -147,6 +146,7 @@ const converter = (arr,operators)=>{
   arr=[...arr2]
   operators = [...operators2];
   for(let i=0;i<arr.length;i++){
+    if(arr2.length<2){return arr2[0]}
     if(operators[i]=="+"){
       o=arr2[i]*arr2[i+1]
       arr2.splice(i,i+2,o)
