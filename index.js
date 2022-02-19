@@ -21,48 +21,87 @@ document.addEventListener("click", mouseClickHandler, false);
 function getRandomInt(max) { //between 0 and max inclusive
   return Math.floor(Math.random() * max);
 }
+function sum(li){
+	var total = 0;
+	for(var n = 0; n<li.length; n++){
+  	total += li[n];
+  }
+  return total;
+}
+function normalizeAndCumulate(li){
+	sm = sum(li);
+  for (var n = 0; n < li.length; n++){
+  	li[n] /= sm;
+    if (n > 0) li[n] += li[n-1];
+  }
+  return li;
+}
 function generateEquation(){
-	var choice = getRandomInt(5);
+	weights = [0.5,0.5,0.5,0.5,1,1,1,0.1,1]
+  weights = normalizeAndCumulate(weights);
+  
+	var choice = Math.random();
   equation = ""
-	if (choice == 0){
-  	do{
-  		equation = (10+getRandomInt(89)) + "+" + (10+getRandomInt(89));
-      answer = evaluate(equation);
-    } while (answer < 10 || answer >= 100);
-  } 
-  else if (choice == 1){
+	if (choice <= weights[0]){
   	do{
   		equation = (10+getRandomInt(89)) + "-" + (1+getRandomInt(8)) + "*" + (1+getRandomInt(8));
       answer = evaluate(equation);
     } while (answer < 0 || answer >= 10);
-  } 
-  else if (choice == 2) {
+  }  // DD-D*D=D
+  else if (choice <= weights[1]){
   	do{
   		equation = (10+getRandomInt(89)) + "-" + (1+getRandomInt(8)) + "-" + (1+getRandomInt(8));
       answer = evaluate(equation);
     } while (answer < 0 || answer >= 10);
-  }
-  else if (choice == 3) {
+  } //DD-D-D=D
+  else if (choice <= weights[2]) {
   	do{
   		equation = (10+getRandomInt(89)) + "+" + (1+getRandomInt(8)) + "-" + (1+getRandomInt(8));
       answer = evaluate(equation);
     } while (answer < 0 || answer >= 10);
-  }
-  else if (choice == 4) {
+  } //DD+D-D=D
+  else if (choice <= weights[3]) {
   	do{
     	var num = 1+getRandomInt(8);
       var num2 = 1+getRandomInt(8);
       var num3 = 10-num2;
   		equation = (num*num2) + "/" + (num) + "+" + (1+getRandomInt(num3-2));
       answer = evaluate(equation);
+      if (num*num2 < 10) answer = -1000;
     } while (answer < 0 || answer >= 10);
-  }
-  else {
+  } // DD/D+D=D
+  else if (choice <= weights[4]) {
+  	do{
+  		equation = (10+getRandomInt(89)) + "+" + (10+getRandomInt(89));
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  } // DD+DD=DD
+  else if (choice <= weights[5]) {
+  	do{
+  		equation = (10+getRandomInt(89)) + "-" + (10+getRandomInt(89));
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  } // DD-DD=DD
+  else if (choice <= weights[6]) {
   	do{
   		equation = (1+getRandomInt(8)) + "+" + (1+getRandomInt(8)) + "*" + (1+getRandomInt(8));
       answer = evaluate(equation);
     } while (answer < 10 || answer >= 100);
-  }
+  } //D+D*D
+  else if (choice <= weights[7]) {
+  	do{
+    	var n1 = (100+getRandomInt(8)); // 100-108
+      var n2 = ((n1-99)+getRandomInt(108-n1))
+  		equation = n1 + "-" + n2;
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  } //10D-D=9D
+  else if (choice <= weights[8]) {
+  	do{
+  		equation = (1+getRandomInt(8)) + "*" + (1+getRandomInt(8)) + "-" + (1+getRandomInt(8));
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  } //D*D-D=DD
   equation = equation + "=" + answer;
   return equation;
 }
