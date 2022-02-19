@@ -148,13 +148,13 @@ const converter = (arr,operators)=>{
   for(let i=0;i<arr.length;i++){
     if(arr2.length<2){return arr2[0]}
     if(operators[i]=="+"){
-      o=arr2[i]+arr2[i+1]
-      arr2.splice(i,i+2,o)
+      o=arr2[0]+arr2[0+1]
+      arr2.splice(0,0+2,o)
       console.log(o,arr2, operators[i])
     }
     if(operators[i]=="-"){
-      o=arr2[i]-arr2[i+1]
-      arr2.splice(i,i+2,o)
+      o=arr2[0]-arr2[0+1]
+      arr2.splice(0,0+2,o)
       console.log(o,arr2, operators[i])
     }
   }
