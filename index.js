@@ -7,29 +7,38 @@ var kboxGap = 3;
 var eq = ["12+35=47","10+10=20","17-9-7=1","3/1+9=12"];
 var pastGuesses = [""];
 var lastkey = ""
-var analyses = [["BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB"],
-["BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB"],
-["BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB"],
-["BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB","BBBBBBBB"]]
+var analyses = [["NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN"],
+["NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN"],
+["NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN"],
+["NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN","NNNNNNNN"]]
+var greens = ["","","",""]
+var yellows = ["","","",""]
+var blacks = ["","","",""]
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("click", mouseClickHandler, false);
+function insert(strin, pos, insertion){
+	return strin = strin.substring(0,pos)+insertion+strin.substring(pos+1,strin.length);
+}
+function removeStr(strin, pos){
+	return strin = strin.substring(0,pos)+strin.substring(pos+1,strin.length);
+}
 function checkGuess(guess,correct){
     var analysis = "BBBBBBBB"
     var guess2 = guess
     var correct2 = correct
     for (var e=0; e<8; e++){
         if (guess[e] == correct[e]){
-            analysis = analysis.substring(0,e)+"G"+analysis.substring(e+1,8);
-            guess2 = guess2.substring(0,e)+"~"+guess2.substring(e+1,8);
-            correct2 = correct2.substring(0,e)+"!"+correct2.substring(e+1,8);
+        		analysis = insert(analysis, e, "G");
+            guess2 = insert(guess2, e, "~");
+            correct2 = insert(correct2, e, "!");
         }
     }
     for (var e=0; e<guess2.length; e++){
         var ind = correct2.indexOf(guess2[e]);
         if (ind != -1){
-            analysis = analysis.substring(0,e)+"Y"+analysis.substring(e+1,8);
-            correct2 = correct2.substring(0,ind)+correct2.substring(ind+1,8);
+        		analysis = insert(analysis, e, "Y");
+            correct2 = insert(correct2, ind, "@");
         }
     }
     return analysis;
@@ -88,7 +97,22 @@ function keyDownHandler(e) {
       } else if (pastGuesses[pastGuesses.length-1].split("=").length-1 == 1 && evaluate(pastGuesses[pastGuesses.length-1].split("=")[0]) == evaluate(pastGuesses[pastGuesses.length-1].split("=")[1])){
         for (var Q = 0; Q < 4; Q++){
         	guess = pastGuesses[pastGuesses.length-1];
-        	analyses[Q][pastGuesses.length-1] = checkGuess(guess, eq[Q])
+          var analysis = checkGuess(guess, eq[Q]);
+        	analyses[Q][pastGuesses.length-1] = analysis;
+          for (var e = 0; e < analysis.length; e++){
+          	if (analysis[e] == "G" && greens[Q].indexOf(guess[e]) == -1){
+            	greens[Q] = greens[Q] + guess[e];
+              if (yellows[Q].indexOf(guess[e]) != -1){
+              	yellows[Q] = removeStr(yellows[Q], yellows[Q].indexOf(guess[e]));
+              }
+            }
+          	if (analysis[e] == "Y" && greens[Q].indexOf(guess[e]) == -1 && yellows[Q].indexOf(guess[e]) == -1){
+            	yellows[Q] = yellows[Q] + guess[e];
+            }
+          	if (analysis[e] == "B" && greens[Q].indexOf(guess[e]) == -1 && yellows[Q].indexOf(guess[e]) == -1 && blacks[Q].indexOf(guess[e]) == -1){
+            	blacks[Q] = blacks[Q] + guess[e];
+            }
+          }
         }
         lastkey = ""
         pastGuesses.push("");
@@ -116,11 +140,13 @@ function mouseClickHandler(e) {
 
 function checkSquare(gn, col,Q){
 	if (analyses[Q][gn][col] == "B"){
-  	return "#AAAAAA";
+  	return "#555555";
   } else if (analyses[Q][gn][col] == "Y"){
 	  return "#FFFF00";
   } else if (analyses[Q][gn][col] == "G"){
   	return "#00FF00";
+  } else if (analyses[Q][gn][col] == "N"){
+  	return "#AAAAAA";
   }
 }
 function drawBoxes(){
@@ -147,28 +173,57 @@ function drawBoxes(){
     }
   }
 }
+function rc2q(r,c){
+	return r+c*2;
+  // 0 2
+  // 1 3
+}
+function q2rc(q){
+	return [1*(q>1),q%2];
+}
+function getKeyboardColor(Q, s){
+	if (greens[Q].indexOf(s) != -1){
+  	return "#00FF00";
+  }if (yellows[Q].indexOf(s) != -1){
+  	return "#FFFF00";
+  }if (blacks[Q].indexOf(s) != -1){
+  	return "#555555";
+  } else {
+  	return "#AAAAAA";
+  }
+}
 function drawKeyboard(){
   for (var n = 0; n<=9; n++){
-    ctx.beginPath();
     var x = canvas.width/2 - (kboxGap+kboxWidth)*5 + n*(kboxGap+kboxWidth);
     var y = canvas.height-kboxWidth*3
-    ctx.rect(x, y, kboxWidth, kboxWidth);
-    ctx.fillStyle = "#AAAAAA";
-    ctx.fill();
-    ctx.closePath();
+    for (var q = 0; q<4; q++){
+    	ctx.beginPath();
+      var rc = q2rc(q);
+      var r = rc[0];
+      var c = rc[1];
+      ctx.rect(x+r*kboxWidth/2, y+c*kboxWidth/2, kboxWidth/2, kboxWidth/2);
+      ctx.fillStyle = getKeyboardColor(q,n.toString());
+      ctx.fill();
+      ctx.closePath();
+    }
     ctx.font = "16px Arial";
     ctx.fillStyle = "#000000";
     ctx.fillText(n, x + kboxWidth/2-5, y + kboxWidth/2 +5);
   }
   var symbols = ["+","-","*","/","=","E","D"]
   for (var n = 0; n<7; n++){
-    ctx.beginPath();
     var x = canvas.width/2 - (kboxGap+kboxWidth)*3.5 + n*(kboxGap+kboxWidth);
     var y = canvas.height-kboxWidth*1.5
-    ctx.rect(x, y, kboxWidth, kboxWidth);
-    ctx.fillStyle = "#AAAAAA";
-    ctx.fill();
-    ctx.closePath();
+    for (var q = 0; q<4; q++){
+    	ctx.beginPath();
+      var rc = q2rc(q);
+      var r = rc[0];
+      var c = rc[1];
+      ctx.rect(x+r*kboxWidth/2, y+c*kboxWidth/2, kboxWidth/2, kboxWidth/2);
+      ctx.fillStyle = getKeyboardColor(q,symbols[n]);
+      ctx.fill();
+      ctx.closePath();
+    }
     ctx.font = "16px Arial";
     ctx.fillStyle = "#000000";
     ctx.fillText(symbols[n], x + kboxWidth/2-5, y + kboxWidth/2 +5);
