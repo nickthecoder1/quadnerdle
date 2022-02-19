@@ -232,6 +232,8 @@ function backspaceBtn(){pastGuesses[pastGuesses.length-1] = pastGuesses[pastGues
 function enterBtn(){
 	if (gameState > 0){
     setDefaults();
+  } else if (pastGuesses[pastGuesses.length-1].length == 0){
+    message = ""
   } else if (pastGuesses[pastGuesses.length-1].length < 8){
     message = "guess too short"
   } else if (pastGuesses[pastGuesses.length-1].split("=").length-1 == 1 && evaluate(pastGuesses[pastGuesses.length-1].split("=")[0]) == evaluate(pastGuesses[pastGuesses.length-1].split("=")[1])){
