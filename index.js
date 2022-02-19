@@ -139,7 +139,7 @@ function setDefaults(){
   boxGap = 3;
   eq = [generateEquation(),generateEquation(),generateEquation(),generateEquation()];
   pastGuesses = [""];
-  message = ""
+  message = "test"
   analyses = [[],[],[],[]]
   for (var q=0; q<4; q++){
   	for (var e=0; e<numGuesses; e++){
@@ -152,10 +152,10 @@ function setDefaults(){
   gameState = 0; // 0 for playing, 1 for win, 2 for lose
 }
 function insert(strin, pos, insertion){
-    return strin = strin.substring(0,pos)+insertion+strin.substring(pos+1,strin.length);
+    return strin.substring(0,pos)+insertion+strin.substring(pos+1,strin.length);
 }
 function removeStr(strin, pos){
-    return strin = strin.substring(0,pos)+strin.substring(pos+1,strin.length);
+    return strin.substring(0,pos)+strin.substring(pos+1,strin.length);
 }
 function checkGuess(guess,correct){
     var analysis = "BBBBBBBB"
@@ -198,13 +198,13 @@ const converter = (arr,operators)=>{
       o=arr2[i-skips]*arr2[i+1-skips]
       arr2.splice(i-skips,i+2-skips,o)
       operators2.splice(i-skips,i+1-skips)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
     if(operators[i]=="/"){
       o=arr2[i-skips]/arr2[i+1-skips]
       arr2.splice(i-skips,i+2-skips,o)
       operators2.splice(i-skips,i+1-skips)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
   }
   arr=[...arr2]
@@ -214,12 +214,12 @@ const converter = (arr,operators)=>{
     if(operators[i]=="+"){
       o=arr2[0]+arr2[0+1]
       arr2.splice(0,0+2,o)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
     if(operators[i]=="-"){
       o=arr2[0]-arr2[0+1]
       arr2.splice(0,0+2,o)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
   }
   
@@ -273,19 +273,19 @@ function enterBtn(){
       } else {
         numCorrect++;
         for (var e = 0; e < guess.length; e++){
-          console.log(guess[e])
+          //console.log(guess[e])
           if (blacks[Q].indexOf(guess[e]) == -1){
             blacks[Q] = blacks[Q] + guess[e];
           }
         }
       }
     }
-    console.log(numCorrect)
+    //console.log(numCorrect)
     if (numCorrect == 4){
-      message = "Congrats you win! Press enter to play again"
+      message = "Congrats you win! Press enter to play again. Click on this message to share."
       gameState = 1;
     } else if (pastGuesses.length == numGuesses){
-      message = "Sorry, you lose. Press enter to play again"
+      message = "Sorry, you lose. Press enter to play again. Click on this message to share."
       gameState = 2;
     } else{
       message = ""
@@ -329,7 +329,37 @@ function  mouseMoveHandler(e){
       return;
     }
   }
+  var x = 0
+  var y = canvas.height-32
+  if (mouseX > x && mouseY > y && mouseX < x+170 && mouseY < y+16){
+    canvas.style.cursor = "pointer";
+    return;
+  }
+  x = canvas.width/2;
+  y = (boxWidth+boxGap)*(numGuesses+2);
+  if (gameState > 0 && mouseX > x-300 && mouseY > y-16 && mouseX < x+300 && mouseY < y){
+    canvas.style.cursor = "pointer";
+    return;
+  }
   canvas.style.cursor = "default";
+}
+function resultsToString(){
+	var result = "";
+  colors = ["B","Y","G","N"];
+  emojis = ["⬛","🟨","🟩","⬜"];
+	for (var R = 0; R < 2; R++){
+    for (var r = 0; r < numGuesses; r++){
+      for (var C = 0; C < 2; C++){
+        for (var c = 0; c < 8; c++){
+        	result = result + emojis[colors.indexOf(analyses[rc2q(R,C)][r][c])];
+        }
+        result = result + "\t";
+      }
+      result = result + "\n";
+    }
+    if (R==0) result = result + "\n\n";
+  }
+  return result;
 }
 function mouseClickHandler(e) {
   mouseX = e.clientX - canvas.offsetLeft;
@@ -354,6 +384,20 @@ function mouseClickHandler(e) {
       if (n == 6) backspaceBtn();
       return;
     }
+  }
+  var x = 0
+  var y = canvas.height-32
+  if (mouseX > x && mouseY > y && mouseX < x+170 && mouseY < y+16){
+    navigator.clipboard.writeText("https://nickthecoder1.github.io/quadnerdle/?seed="+seed);
+    message = "copied!";
+    return;
+  }
+  x = canvas.width/2;
+  y = (boxWidth+boxGap)*(numGuesses+2);
+  if (gameState > 0 && mouseX > x-300 && mouseY > y-16 && mouseX < x+300 && mouseY < y){
+    navigator.clipboard.writeText("https://nickthecoder1.github.io/quadnerdle/?seed="+seed + "\n\n" + resultsToString());
+    message = "copied!";
+    return;
   }
 }
 
@@ -469,7 +513,7 @@ function draw() {
   ctx.fillStyle = "#000000";
   ctx.fillText(message, canvas.width/2,(boxWidth+boxGap)*(numGuesses+2));
   ctx.textAlign = 'left';
-  //ctx.fillText("seed:"+seed, 10, canvas.height-16);
+  ctx.fillText("seed:"+seed, 10, canvas.height-16);
     if (gameState == 2){
     for (var q = 0; q<4; q++){
         for (var c = 0; c < 8; c++){
