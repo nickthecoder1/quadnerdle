@@ -22,7 +22,7 @@ function getRandomInt(max) { //between 0 and max inclusive
   return Math.floor(Math.random() * max);
 }
 function generateEquation(){
-	var choice = getRandomInt(4);
+	var choice = getRandomInt(5);
   equation = ""
 	if (choice == 0){
   	do{
@@ -47,6 +47,15 @@ function generateEquation(){
   		equation = (10+getRandomInt(89)) + "+" + (1+getRandomInt(8)) + "-" + (1+getRandomInt(8));
       answer = evaluate(equation);
     } while (answer < 10 || answer >= 100);
+  }
+  else if (choice == 4) {
+  	do{
+    	var num = 1+getRandomInt(8);
+      var num2 = 1+getRandomInt(8);
+      var num3 = 10-num2;
+  		equation = (num*num2) + "/" + (num) + "+" + (1+getRandomInt(num3-2));
+      answer = evaluate(equation);
+    } while (answer < 0 || answer >= 10);
   }
   else {
   	do{
