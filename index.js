@@ -198,13 +198,13 @@ const converter = (arr,operators)=>{
       o=arr2[i-skips]*arr2[i+1-skips]
       arr2.splice(i-skips,i+2-skips,o)
       operators2.splice(i-skips,i+1-skips)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
     if(operators[i]=="/"){
       o=arr2[i-skips]/arr2[i+1-skips]
       arr2.splice(i-skips,i+2-skips,o)
       operators2.splice(i-skips,i+1-skips)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
   }
   arr=[...arr2]
@@ -214,12 +214,12 @@ const converter = (arr,operators)=>{
     if(operators[i]=="+"){
       o=arr2[0]+arr2[0+1]
       arr2.splice(0,0+2,o)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
     if(operators[i]=="-"){
       o=arr2[0]-arr2[0+1]
       arr2.splice(0,0+2,o)
-      console.log(o,arr2, operators[i])
+      //console.log(o,arr2, operators[i])
     }
   }
   
@@ -488,5 +488,6 @@ splitUrl = window.location.href.split("?seed=");
 if (splitUrl.length > 1){
   seed = splitUrl[1];
   randGen = randomRealGen("1"+seed);
+  console.log("new seed = " + seed)
 }
 draw();
