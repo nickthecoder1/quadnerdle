@@ -273,14 +273,14 @@ function enterBtn(){
       } else {
         numCorrect++;
         for (var e = 0; e < guess.length; e++){
-          console.log(guess[e])
+          //console.log(guess[e])
           if (blacks[Q].indexOf(guess[e]) == -1){
             blacks[Q] = blacks[Q] + guess[e];
           }
         }
       }
     }
-    console.log(numCorrect)
+    //console.log(numCorrect)
     if (numCorrect == 4){
       message = "Congrats you win! Press enter to play again"
       gameState = 1;
