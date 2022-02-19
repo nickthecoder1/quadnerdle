@@ -469,7 +469,7 @@ function draw() {
   ctx.fillStyle = "#000000";
   ctx.fillText(message, canvas.width/2,(boxWidth+boxGap)*(numGuesses+2));
   ctx.textAlign = 'left';
-  ctx.fillText("seed:"+seed, 10, canvas.height-16);
+  //ctx.fillText("seed:"+seed, 10, canvas.height-16);
     if (gameState == 2){
     for (var q = 0; q<4; q++){
         for (var c = 0; c < 8; c++){
