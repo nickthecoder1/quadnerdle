@@ -18,8 +18,44 @@ var gameState = 0; // 0 for playing, 1 for win, 2 for lose
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("click", mouseClickHandler, false);
+function getRandomInt(max) { //between 0 and max inclusive
+  return Math.floor(Math.random() * max);
+}
 function generateEquation(){
-	
+	var choice = getRandomInt(4);
+  equation = ""
+	if (choice == 0){
+  	do{
+  		equation = (10+getRandomInt(89)) + "+" + (10+getRandomInt(89));
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  } 
+  else if (choice == 1){
+  	do{
+  		equation = (10+getRandomInt(89)) + "-" + (1+getRandomInt(8)) + "*" + (1+getRandomInt(8));
+      answer = evaluate(equation);
+    } while (answer < 0 || answer >= 10);
+  } 
+  else if (choice == 2) {
+  	do{
+  		equation = (10+getRandomInt(89)) + "-" + (1+getRandomInt(8)) + "-" + (1+getRandomInt(8));
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  }
+  else if (choice == 3) {
+  	do{
+  		equation = (10+getRandomInt(89)) + "+" + (1+getRandomInt(8)) + "-" + (1+getRandomInt(8));
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  }
+  else {
+  	do{
+  		equation = (1+getRandomInt(8)) + "+" + (1+getRandomInt(8)) + "*" + (1+getRandomInt(8));
+      answer = evaluate(equation);
+    } while (answer < 10 || answer >= 100);
+  }
+  equation = equation + "=" + answer;
+  return equation;
 }
 function setDefaults(){
   mouseX = 0;
@@ -28,9 +64,9 @@ function setDefaults(){
   kboxGap = 3;
   boxWidth = 30;
   boxGap = 3;
-  eq = ["12+35=47","10+10=20","17-9-7=1","3/1+9=12"];
+  eq = [generateEquation(),generateEquation(),generateEquation(),generateEquation()];
   pastGuesses = [""];
-  message = "pog"
+  message = ""
   analyses = [[],[],[],[]]
   for (var q=0; q<4; q++){
   	for (var e=0; e<numGuesses; e++){
@@ -81,30 +117,39 @@ function checkGuess(guess,correct){
 
 const converter = (arr,operators)=>{
   let arr2=[...arr]
-  for(let i=0;i<arr.length;i++){
-    let o;
+  let o;
+  let operators2 = [...operators];
+  let skips = 0;
+  for(let i=0;i<arr.length-1;i++){
     if(arr2.length<2){return arr2[0]}
-    if(operators[i]=="+"){
-      o=arr2[0]+arr2[1]
-      arr2.splice(0, 2, o)
-      console.log(o,arr2, operators[i])
-    }
-    if(operators[i]=="-"){
-      o=arr2[0]-arr2[1]
-      arr2.splice(0,2, o)
-      console.log(o,arr2, operators[i])
-    }
     if(operators[i]=="*"){
-      o=arr2[0]*arr2[1]
-      arr2.splice(0,2,o)
+      o=arr2[i-skips]*arr2[i+1-skips]
+      arr2.splice(i-skips,i+2-skips,o)
+      operators2.splice(i-skips,i+1-skips)
       console.log(o,arr2, operators[i])
     }
     if(operators[i]=="/"){
-      o=arr2[0]/arr2[1]
-      arr2.splice(0,2, o)
+      o=arr2[i-skips]/arr2[i+1-skips]
+      arr2.splice(i-skips,i+2-skips,o)
+      operators2.splice(i-skips,i+1-skips)
       console.log(o,arr2, operators[i])
     }
   }
+  arr=[...arr2]
+  operators = [...operators2];
+  for(let i=0;i<arr.length;i++){
+    if(operators[i]=="+"){
+      o=arr2[i]*arr2[i+1]
+      arr2.splice(i,i+2,o)
+      console.log(o,arr2, operators[i])
+    }
+    if(operators[i]=="-"){
+      o=arr2[i]*arr2[i+1]
+      arr2.splice(i,i+2,o)
+      console.log(o,arr2, operators[i])
+    }
+  }
+  
 }
 
 function addSymbol(S){
@@ -129,6 +174,7 @@ function keyDownHandler(e) {
             var analysis = checkGuess(guess, eq[Q]);
             analyses[Q][pastGuesses.length-1] = analysis;
             if (analysis == "GGGGGGGG"){
+            	numCorrect++;
               for (var e = 0; e < analysis.length; e++){
                 if (yellows[Q].indexOf(guess[e]) != -1){
                   yellows[Q] = removeStr(yellows[Q], yellows[Q].indexOf(guess[e]));
@@ -167,7 +213,7 @@ function keyDownHandler(e) {
           }
         }
         console.log(numCorrect)
-        if (numCorrect == 3){
+        if (numCorrect == 4){
             message = "Congrats you win! Press enter to play again"
             gameState = 1;
         } else if (pastGuesses.length == numGuesses){
