@@ -16,7 +16,6 @@ var yellows = ["","","",""]
 var blacks = ["","","",""]
 var gameState = 0; // 0 for playing, 1 for win, 2 for lose
 document.addEventListener("keydown", keyDownHandler, false);
-document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("click", mouseClickHandler, false);
 function getRandomInt(max) { //between 0 and max inclusive
   return Math.floor(Math.random() * max);
@@ -203,95 +202,108 @@ const converter = (arr,operators)=>{
 function addSymbol(S){
     if (pastGuesses[pastGuesses.length-1].length < 8)    pastGuesses[pastGuesses.length-1] = pastGuesses[pastGuesses.length-1] + S;
 }
+function backspaceBtn(){pastGuesses[pastGuesses.length-1] = pastGuesses[pastGuesses.length-1].substring(0,pastGuesses[pastGuesses.length-1].length-1);}
+function enterBtn(){
+	if (gameState > 0){
+    setDefaults();
+  } else if (pastGuesses[pastGuesses.length-1].length < 8){
+    message = "guess too short"
+  } else if (pastGuesses[pastGuesses.length-1].split("=").length-1 == 1 && evaluate(pastGuesses[pastGuesses.length-1].split("=")[0]) == evaluate(pastGuesses[pastGuesses.length-1].split("=")[1])){
+    var numCorrect = 0;
+    for (var Q = 0; Q < 4; Q++){
+      var guess = pastGuesses[pastGuesses.length-1];
+      if (analyses[Q].indexOf("GGGGGGGG") == -1){
+        var analysis = checkGuess(guess, eq[Q]);
+        analyses[Q][pastGuesses.length-1] = analysis;
+        if (analysis == "GGGGGGGG"){
+          numCorrect++;
+          for (var e = 0; e < analysis.length; e++){
+            if (yellows[Q].indexOf(guess[e]) != -1){
+              yellows[Q] = removeStr(yellows[Q], yellows[Q].indexOf(guess[e]));
+            }
+            if (greens[Q].indexOf(guess[e]) != -1){
+              greens[Q] = removeStr(greens[Q], greens[Q].indexOf(guess[e]));
+            }
+            if (blacks[Q].indexOf(guess[e]) == -1){
+              blacks[Q] = blacks[Q] + guess[e];
+            }
+          }
+        } else {
+          for (var e = 0; e < analysis.length; e++){
+            if (analysis[e] == "G" && greens[Q].indexOf(guess[e]) == -1){
+              greens[Q] = greens[Q] + guess[e];
+              if (yellows[Q].indexOf(guess[e]) != -1){
+                yellows[Q] = removeStr(yellows[Q], yellows[Q].indexOf(guess[e]));
+              }
+            }
+            if (analysis[e] == "Y" && greens[Q].indexOf(guess[e]) == -1 && yellows[Q].indexOf(guess[e]) == -1){
+              yellows[Q] = yellows[Q] + guess[e];
+            }
+            if (analysis[e] == "B" && greens[Q].indexOf(guess[e]) == -1 && yellows[Q].indexOf(guess[e]) == -1 && blacks[Q].indexOf(guess[e]) == -1){
+              blacks[Q] = blacks[Q] + guess[e];
+            }
+          }
+        }
+      } else {
+        numCorrect++;
+        for (var e = 0; e < guess.length; e++){
+          console.log(guess[e])
+          if (blacks[Q].indexOf(guess[e]) == -1){
+            blacks[Q] = blacks[Q] + guess[e];
+          }
+        }
+      }
+    }
+    console.log(numCorrect)
+    if (numCorrect == 4){
+      message = "Congrats you win! Press enter to play again"
+      gameState = 1;
+    } else if (pastGuesses.length == numGuesses){
+      message = "Sorry, you lose. Press enter to play again"
+      gameState = 2;
+    } else{
+      message = ""
+      pastGuesses.push("");
+    }
 
+  } else {
+    message = "does not compute"
+  }
+}
 function keyDownHandler(e) {
     if(["0","1","2","3","4","5","6","7","8","9","+","-","=","/","*"].indexOf(e.key) != -1) {
         addSymbol(e.key);
     } else if (e.key == "Backspace" && pastGuesses[pastGuesses.length-1].length > 0){
-        pastGuesses[pastGuesses.length-1] = pastGuesses[pastGuesses.length-1].substring(0,pastGuesses[pastGuesses.length-1].length-1)
+        backspaceBtn();
     } else if (e.key == "Enter"){
-        if (gameState > 0){
-        setDefaults();
-      } else if (pastGuesses[pastGuesses.length-1].length < 8){
-        message = "guess too short"
-      } else if (pastGuesses[pastGuesses.length-1].split("=").length-1 == 1 && evaluate(pastGuesses[pastGuesses.length-1].split("=")[0]) == evaluate(pastGuesses[pastGuesses.length-1].split("=")[1])){
-        var numCorrect = 0;
-        for (var Q = 0; Q < 4; Q++){
-          var guess = pastGuesses[pastGuesses.length-1];
-          if (analyses[Q].indexOf("GGGGGGGG") == -1){
-            var analysis = checkGuess(guess, eq[Q]);
-            analyses[Q][pastGuesses.length-1] = analysis;
-            if (analysis == "GGGGGGGG"){
-            	numCorrect++;
-              for (var e = 0; e < analysis.length; e++){
-                if (yellows[Q].indexOf(guess[e]) != -1){
-                  yellows[Q] = removeStr(yellows[Q], yellows[Q].indexOf(guess[e]));
-                }
-                if (greens[Q].indexOf(guess[e]) != -1){
-                  greens[Q] = removeStr(greens[Q], greens[Q].indexOf(guess[e]));
-                }
-                if (blacks[Q].indexOf(guess[e]) == -1){
-                  blacks[Q] = blacks[Q] + guess[e];
-                }
-              }
-            } else {
-              for (var e = 0; e < analysis.length; e++){
-                if (analysis[e] == "G" && greens[Q].indexOf(guess[e]) == -1){
-                  greens[Q] = greens[Q] + guess[e];
-                  if (yellows[Q].indexOf(guess[e]) != -1){
-                    yellows[Q] = removeStr(yellows[Q], yellows[Q].indexOf(guess[e]));
-                  }
-                }
-                if (analysis[e] == "Y" && greens[Q].indexOf(guess[e]) == -1 && yellows[Q].indexOf(guess[e]) == -1){
-                  yellows[Q] = yellows[Q] + guess[e];
-                }
-                if (analysis[e] == "B" && greens[Q].indexOf(guess[e]) == -1 && yellows[Q].indexOf(guess[e]) == -1 && blacks[Q].indexOf(guess[e]) == -1){
-                  blacks[Q] = blacks[Q] + guess[e];
-                }
-              }
-            }
-          } else {
-            numCorrect++;
-            for (var e = 0; e < guess.length; e++){
-                console.log(guess[e])
-              if (blacks[Q].indexOf(guess[e]) == -1){
-                blacks[Q] = blacks[Q] + guess[e];
-              }
-            }
-          }
-        }
-        console.log(numCorrect)
-        if (numCorrect == 4){
-            message = "Congrats you win! Press enter to play again"
-            gameState = 1;
-        } else if (pastGuesses.length == numGuesses){
-            message = "Sorry, you lose. Press enter to play again"
-            gameState = 2;
-        } else{
-            message = ""
-            pastGuesses.push("");
-        }
-        
-      } else {
-        message = "does not compute"
-      }
+        enterBtn();
     }
     
 }
 
-function keyUpHandler(e) {
-    if(e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = false;
-    }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
-        leftPressed = false;
-    }
-}
 
 function mouseClickHandler(e) {
   mouseX = e.clientX - canvas.offsetLeft;
   mouseY = e.clientY - canvas.offsetTop;
-  
+  for (var n = 0; n<9; n++){
+  	var xy = getNumberXY(n);
+    var x = xy[0];
+    var y = xy[1];
+  	if (mouseX > x && mouseY > y && mouseX < x+kboxWidth && mouseY < y+kboxWidth){
+    	addSymbol(n.toString());
+    }
+  }
+  for (var n = 0; n<7; n++){
+  	var sxy = getSymbolInfo(n);
+    var s = sxy[0];
+    var x = sxy[1];
+    var y = sxy[2];
+  	if (mouseX > x && mouseY > y && mouseX < x+kboxWidth && mouseY < y+kboxWidth){
+  		if (n <= 4) addSymbol(s);
+      if (n == 5) enterBtn();
+      if (n == 6) backspaceBtn();
+    }
+  }
 }
 
 function checkSquare(gn, col,Q){
@@ -346,12 +358,24 @@ function getKeyboardColor(Q, s){
     return "#AAAAAA";
   }
 }
-function drawKeyboard(){
-  for (var n = 0; n<=9; n++){
+function getNumberXY(n){
     var x = canvas.width/2 - (kboxGap+kboxWidth)*5 + n*(kboxGap+kboxWidth);
     var y = canvas.height-kboxWidth*3
+    return [x,y]
+}
+function getSymbolInfo(n){
+  	var symbols = ["+","-","*","/","=","E","D"]
+    var x = canvas.width/2 - (kboxGap+kboxWidth)*3.5 + n*(kboxGap+kboxWidth);
+    var y = canvas.height-kboxWidth*1.5
+    return [symbols[n],x,y]
+}
+function drawKeyboard(){
+  for (var n = 0; n<=9; n++){
     for (var q = 0; q<4; q++){
-        ctx.beginPath();
+      ctx.beginPath();
+      var xy = getNumberXY(n)
+      var x = xy[0];
+      var y = xy[1];
       var rc = q2rc(q);
       var r = rc[0];
       var c = rc[1];
@@ -364,23 +388,24 @@ function drawKeyboard(){
     ctx.fillStyle = "#000000";
     ctx.fillText(n, x + kboxWidth/2-5, y + kboxWidth/2 +5);
   }
-  var symbols = ["+","-","*","/","=","E","D"]
   for (var n = 0; n<7; n++){
-    var x = canvas.width/2 - (kboxGap+kboxWidth)*3.5 + n*(kboxGap+kboxWidth);
-    var y = canvas.height-kboxWidth*1.5
+    var sxy = getSymbolInfo(n)
+    var symbol = sxy[0];
+    var x = sxy[1];
+    var y = sxy[2];
     for (var q = 0; q<4; q++){
-        ctx.beginPath();
+      ctx.beginPath();
       var rc = q2rc(q);
       var r = rc[0];
       var c = rc[1];
       ctx.rect(x+r*kboxWidth/2, y+c*kboxWidth/2, kboxWidth/2, kboxWidth/2);
-      ctx.fillStyle = getKeyboardColor(q,symbols[n]);
+      ctx.fillStyle = getKeyboardColor(q,symbol);
       ctx.fill();
       ctx.closePath();
     }
     ctx.font = "16px Arial";
     ctx.fillStyle = "#000000";
-    ctx.fillText(symbols[n], x + kboxWidth/2-5, y + kboxWidth/2 +5);
+    ctx.fillText(symbol, x + kboxWidth/2-5, y + kboxWidth/2 +5);
   }
 }
 function draw() {
