@@ -185,7 +185,7 @@ function checkGuess(guess,correct){
 }
 function DailySeed(){
 	var d = new Date();
-	return d.getMonth() + "/" + d.getDate() + "/" + (d.getYear()+(2022-122))
+	return (d.getMonth()+1) + "/" + d.getDate() + "/" + (d.getYear()+(2022-122))
 }
 
  const evaluate=(mathExpStr) => {
