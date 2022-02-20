@@ -374,6 +374,7 @@ function resultsToString(){
   emojis = ["⬛","🟨","🟩","⬜"];
 	for (var R = 0; R < 2; R++){
     for (var r = 0; r < numGuesses; r++){
+    	if (analyses[rc2q(R,0)][r] == "NNNNNNNN" && analyses[rc2q(R,1)][r] == "NNNNNNNN") continue;
       for (var C = 0; C < 2; C++){
         for (var c = 0; c < 8; c++){
         	result = result + emojis[colors.indexOf(analyses[rc2q(R,C)][r][c])];
