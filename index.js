@@ -17,6 +17,7 @@ var blacks = ["","","",""]
 var seed = "test";
 var randGen = randomRealGen(seed);
 var gameState = 0; // 0 for playing, 1 for win, 2 for lose
+var mode = 0; // 0 for daily, 1 for practice
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("click", mouseClickHandler, false);
 document.addEventListener("mousemove", mouseMoveHandler, false);
@@ -129,8 +130,13 @@ function generateEquation(){
   return equation;
 }
 function setDefaults(){
-	seed = Date.now().toString();
-	randGen = randomRealGen("1"+seed);
+	if (mode == 0){
+    seed = DailySeed();
+    randGen = randomRealGen("1"+seed);
+  } else {
+    seed = Date.now().toString();
+    randGen = randomRealGen("1"+seed);
+  }
   mouseX = 0;
   mouseY = 0;
   kboxWidth = 30;
@@ -176,6 +182,10 @@ function checkGuess(guess,correct){
         }
     }
     return analysis;
+}
+function DailySeed(){
+	var d = new Date();
+	return d.getMonth() + "/" + d.getDate() + "/" + (d.getYear()+(2022-122))
 }
 
  const evaluate=(mathExpStr) => {
@@ -309,7 +319,7 @@ function keyDownHandler(e) {
     
 }
 
-function  mouseMoveHandler(e){
+function mouseMoveHandler(e){
   mouseX = e.clientX - canvas.offsetLeft;
   mouseY = e.clientY - canvas.offsetTop;
   for (var n = 0; n<=9; n++){
@@ -340,6 +350,19 @@ function  mouseMoveHandler(e){
   x = canvas.width/2;
   y = (boxWidth+boxGap)*(numGuesses+2);
   if (gameState > 0 && mouseX > x-300 && mouseY > y-16 && mouseX < x+300 && mouseY < y){
+    canvas.style.cursor = "pointer";
+    return;
+  }
+  var w = 65;
+  var x = canvas.width-(w*2+20);
+  var y = canvas.height-50;
+  var h = 35;
+  if (mode == 1 && mouseX > x && mouseY > y && mouseX < x+w && mouseY < y+h){
+    canvas.style.cursor = "pointer";
+    return;
+  }
+  x += w + 10;
+  if (mode == 0 && mouseX > x && mouseY > y && mouseX < x+w && mouseY < y+h){
     canvas.style.cursor = "pointer";
     return;
   }
@@ -399,6 +422,21 @@ function mouseClickHandler(e) {
   if (gameState > 0 && mouseX > x-300 && mouseY > y-16 && mouseX < x+300 && mouseY < y){
     navigator.clipboard.writeText("https://nickthecoder1.github.io/quadnerdle/?seed="+seed + "\n\n" + resultsToString());
     message = "copied!";
+    return;
+  }
+  var w = 65;
+  var x = canvas.width-(w*2+20);
+  var y = canvas.height-50;
+  var h = 35;
+  if (mode == 1 && mouseX > x && mouseY > y && mouseX < x+w && mouseY < y+h){
+  	mode = 0;
+    setDefaults();
+    return;
+  }
+  x += w + 10;
+  if (mode == 0 && mouseX > x && mouseY > y && mouseX < x+w && mouseY < y+h){
+  	mode = 1;
+    setDefaults();
     return;
   }
 }
@@ -505,11 +543,45 @@ function drawKeyboard(){
     ctx.fillText(symbol, x + kboxWidth/2-5, y + kboxWidth/2 +5);
   }
 }
+function drawDailyAndPracticeButtons(){
+	var dColor = ["#000000","#FFFFFF"];
+	var pColor = ["#FFFFFF","#000000"];
+	if (mode == 1) { // practice
+    dColor = ["#FFFFFF","#000000"];
+    pColor = ["#000000","#FFFFFF"];
+  }
+  var w = 65;
+  var x = canvas.width-(w*2+20);
+  var y = canvas.height-50;
+  var h = 35;
+  ctx.textAlign = 'center';
+  ctx.beginPath();
+  ctx.rect(x, y, w,h);
+  ctx.fillStyle = dColor[0];
+  ctx.fill();
+  ctx.closePath();
+  ctx.font = "16px Arial";
+  ctx.fillStyle = dColor[1];
+  ctx.fillText("daily", x + w/2, y + h/2 + 3);
+      
+  x += w + 10;
+  ctx.beginPath();
+  ctx.rect(x,y, w,h);
+  ctx.fillStyle = pColor[0];
+  ctx.fill();
+  ctx.closePath();
+  ctx.font = "16px Arial";
+  ctx.fillStyle = pColor[1];
+  ctx.fillText("practice", x + w/2, y + h/2 + 3);
+  ctx.textAlign = 'left';
+}
+
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   //draw stuff
   drawBoxes();
   drawKeyboard();
+  drawDailyAndPracticeButtons();
   ctx.textAlign = 'center';
   ctx.font = "16px Arial";
   ctx.fillStyle = "#000000";
@@ -536,5 +608,6 @@ if (splitUrl.length > 1){
   seed = splitUrl[1];
   randGen = randomRealGen("1"+seed);
   eq = [generateEquation(),generateEquation(),generateEquation(),generateEquation()];
+  mode = 1;
 }
 draw();
