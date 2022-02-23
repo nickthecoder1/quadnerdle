@@ -208,12 +208,14 @@ const converter = (arr,operators)=>{
       o=arr2[i-skips]*arr2[i+1-skips]
       arr2.splice(i-skips,i+2-skips,o)
       operators2.splice(i-skips,i+1-skips)
+      skips += 1;
       //console.log(o,arr2, operators[i])
     }
     if(operators[i]=="/"){
       o=arr2[i-skips]/arr2[i+1-skips]
       arr2.splice(i-skips,i+2-skips,o)
       operators2.splice(i-skips,i+1-skips)
+      skips += 1;
       //console.log(o,arr2, operators[i])
     }
   }
